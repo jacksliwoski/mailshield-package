@@ -30,7 +30,7 @@ We will deploy the entire serverless infrastructure directly from your browser u
 3.  **Run the Installer** by pasting the following commands into the CloudShell terminal:
 
     ```bash
-    git clone [https://github.com/jacksliwoski/mailshield-backend.git](https://github.com/jacksliwoski/mailshield-backend.git)
+    git clone https://github.com/jacksliwoski/mailshield-backend.git
     cd mailshield-backend
     chmod +x cloudshell_deploy.sh
     ./cloudshell_deploy.sh
@@ -48,7 +48,7 @@ Now that the backend is running in the cloud, we will set up the dashboard on yo
 1.  **Clone the Frontend Repository** to your local computer:
 
     ```bash
-    git clone [https://github.com/jacksliwoski/healthcare-email-defense-frontend.git](https://github.com/jacksliwoski/healthcare-email-defense-frontend.git)
+    git clone https://github.com/jacksliwoski/healthcare-email-defense-frontend.git
     cd healthcare-email-defense-frontend
     ```
 
