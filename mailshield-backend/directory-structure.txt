@@ -1,0 +1,29 @@
+mailshield-backend/
+├── cloudshell_deploy.sh       # The installer
+├── README.md                  # Instructions
+│
+├── config_defaults/           # NEW: Default configs found in your dump
+│   ├── whitelist.json
+│   ├── account_status.json
+│   ├── org_patterns.json
+│   ├── brand_bases.json
+│   └── smileclinic_entities.json
+│
+├── lambdas/                   # Python Logic
+│   ├── requirements.txt
+│   ├── sender_intel_controller.py
+│   ├── intel_lambda.py
+│   ├── decision_agent_lambda.py
+│   ├── mime_extract_lambda.py
+│   ├── phi_scrubber_lambda.py
+│   ├── context_analyzer_lambda.py
+│   └── lambda_function.py     # (Renamed Feedback Agent)
+│
+└── infra/                     # CDK Code
+    ├── cdk.json
+    ├── package.json
+    ├── tsconfig.json
+    ├── bin/
+    │   └── infra.ts
+    └── lib/
+        └── mailshield-stack.ts

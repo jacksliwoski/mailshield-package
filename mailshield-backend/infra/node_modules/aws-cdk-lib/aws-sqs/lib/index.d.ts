@@ -1,0 +1,6 @@
+export * from './policy';
+export * from './queue';
+export * from './queue-base';
+export * from './sqs.generated';
+export * from './sqs-grants.generated';
+import './sqs-augmentations.generated';
