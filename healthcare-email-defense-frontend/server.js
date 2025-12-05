@@ -22,12 +22,26 @@ const PORT = process.env.PORT || 3000;
 // ----------------------
 
 if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
-  console.log("🔑 Using AWS credentials from environment variables");
-  AWS.config.update({
+  
+  // Base configuration using the required key/secret pair
+  const credentials = {
     region: process.env.AWS_REGION || "us-east-2",
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  });
+  };
+
+  // *** FIX: OPTIONAL SESSION TOKEN LOGIC ADDED ***
+  // If AWS_SESSION_TOKEN is present (i.e., using temporary SSO keys), 
+  // we MUST include it for the keys to be valid.
+  if (process.env.AWS_SESSION_TOKEN) {
+    console.log("⚠️ Session Token detected. Using Temporary Security Credentials.");
+    credentials.sessionToken = process.env.AWS_SESSION_TOKEN;
+  } else {
+    console.log("🔑 Using Permanent Access Keys (No Session Token found).");
+  }
+  
+  AWS.config.update(credentials);
+  
 } else {
   console.log(
     "🔑 Using AWS default credential provider chain (no explicit keys in .env)"
@@ -142,7 +156,7 @@ async function applyLearningFromVerdict(item, verdict, actor, ts, notes) {
       (fromAddr.includes("@") ? fromAddr.split("@")[1] : "unknown");
 
     const pk = `domain#${fromDomain}`;
-    const sk = `verdict#${ts}`;
+    sk = `verdict#${ts}`;
 
     const feedbackItem = {
       pk,
