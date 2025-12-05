@@ -57,3 +57,14 @@ If you do not have an Access Key, follow these steps:
 
 > ### ⚠️ Warning
 > **Never share your `.env` file or commit it to public GitHub repositories.** It contains secrets that give administrative access to your AWS account.
+
+## 🗑️ Uninstalling / Cleanup
+
+To completely remove the system and stop all costs:
+
+1. Open **CloudShell**.
+2. Run:
+   ```bash
+   cd mailshield-backend
+   chmod +x cloudshell_destroy.sh
+   ./cloudshell_destroy.sh
