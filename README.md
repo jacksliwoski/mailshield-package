@@ -23,18 +23,7 @@ This package contains the complete platform:
 
 ---
 
-## 🚀 Phase 1: Enable AI Models
-
-Before deploying the backend, enable the required AI models in your AWS account.
-
-1. Log in to your [AWS Console](https://aws.amazon.com/console/).
-2. Go to **Amazon Bedrock** > **Model access**.
-3. Click **Modify model access**.
-4. Select **Amazon Nova Pro** and click **Next** > **Submit**.
-
----
-
-## ☁️ Phase 2: Deploy the Backend (AWS CloudShell)
+## ☁️ Phase 1: Deploy the Backend (AWS CloudShell)
 
 Deploy the serverless infrastructure directly from your browser using AWS CloudShell.
 
@@ -53,7 +42,7 @@ Deploy the serverless infrastructure directly from your browser using AWS CloudS
 
 ---
 
-## 🖥️ Phase 3: Setup the Dashboard (Local)
+## 🖥️ Phase 2: Setup the Dashboard (Local)
 
 With the backend running in AWS, set up the dashboard on your local machine.
 
@@ -100,7 +89,7 @@ With the backend running in AWS, set up the dashboard on your local machine.
 
 ---
 
-## 📧 Phase 4: Connect Your Email (AWS SES)
+## 📧 Phase 3: Connect Your Email (AWS SES) (Optional)
 
 To automatically scan incoming emails:
 
