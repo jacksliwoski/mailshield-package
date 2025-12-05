@@ -1,14 +1,16 @@
-# MailShield Core (Backend)
+# 🛡️ MailShield Core (Backend)
 
-MailShield Core is a serverless email security engine that uses **Amazon Bedrock (Nova Pro)** and **Comprehend Medical** to detect Phishing, PHI (Protected Health Information), and Brand Impersonation.
+MailShield Core is the **serverless email security engine** for the MailShield Platform. It leverages **Amazon Bedrock (Nova Pro)** and **Amazon Comprehend Medical** to provide real-time detection of Phishing, PHI (Protected Health Information), and Brand Impersonation attempts.
 
-## 🚀 Easy Install (CloudShell)
+---
 
-You can deploy this entire system directly from your browser without installing anything on your computer.
+## 🚀 Easy Deployment (AWS CloudShell)
+
+You can deploy this entire serverless system directly into your AWS account from your browser without needing to install any tools on your local machine.
 
 1.  Log in to your **AWS Console**.
-2.  Open **CloudShell** (Terminal icon in the top right header).
-3.  Run the following commands:
+2.  Open **CloudShell** by clicking the terminal icon (`>_`) in the top-right header.
+3.  Run the following commands in the CloudShell terminal:
 
     ```bash
     git clone https://github.com/jacksliwoski/mailshield-backend.git
@@ -16,55 +18,42 @@ You can deploy this entire system directly from your browser without installing 
     chmod +x cloudshell_deploy.sh
     ./cloudshell_deploy.sh
     ```
+4.  **Wait for the script to complete.**
 
 ---
 
-## ⚙️ Connecting the Frontend
+## ⚙️ Configuration Output
 
-At the end of the deployment script, you will see a generated text block starting with `AWS_REGION=...`. You need to copy this into your frontend application to allow it to communicate with the backend.
+Once deployment is finished, the script will print a block of configuration text starting with `AWS_REGION=...`.
 
-### 1. Update your `.env` file
-1.  Copy the output block from the CloudShell terminal.
-2.  Open the `.env` file in your local frontend application.
-3.  Paste the content, replacing any existing lines.
+**This block is critical.** It contains all the necessary **endpoints** and **resource names** required to connect the **Frontend Dashboard** to this deployed serverless backend.
 
-### 2. Enter your AWS Credentials
-In the `.env` file you just pasted, you will see two lines that look like this:
-```text
-AWS_ACCESS_KEY_ID=YOUR_ACCESS_KEY_HERE
-AWS_SECRET_ACCESS_KEY=YOUR_SECRET_KEY_HERE
-
-You need to replace the placeholders with your actual AWS keys so the dashboard can talk to the database.
-
-# 🔑 How to get your AWS Access Keys (Step-by-Step)
-
-If you do not have an Access Key, follow these steps:
-
-1.  **Log in** to the [AWS Console](https://aws.amazon.com/console/).
-2.  Click on your **Username** (top right corner of the screen) to open the dropdown menu.
-3.  Click **Security credentials**.
-4.  Scroll down to the section titled **Access keys**.
-5.  Click the orange **Create access key** button.
-    * **Note:** If asked for a "Use case," select **"Local code"** or **"Command Line Interface (CLI)"**.
-    * Check the confirmation box saying you understand the risks and click **Next**.
-6.  Click **Create access key**.
-7.  **IMPORTANT:** You will see an **"Access key"** and a **"Secret access key"**.
-    * Copy the **Access Key** and paste it into `AWS_ACCESS_KEY_ID` in your `.env` file.
-    * Click **"Show"** on the **Secret Access Key**, copy it, and paste it into `AWS_SECRET_ACCESS_KEY` in your `.env` file.
-8.  Click **Done**.
+> ### **Action Required:**
+> **Copy the entire output block** and paste it directly into the **`.env` file** in your local `healthcare-email-defense-frontend` repository.
 
 ---
 
-> ### ⚠️ Warning
-> **Never share your `.env` file or commit it to public GitHub repositories.** It contains secrets that give administrative access to your AWS account.
+## 🧩 Architecture Overview
 
-## 🗑️ Uninstalling / Cleanup
+The backend is built on a serverless architecture to efficiently handle email ingestion and analysis:
 
-To completely remove the system and stop all costs:
+* **Ingestion:** Incoming emails are captured via **AWS SES** and passed to the main **Controller Lambda**.
+* **Analysis Pipeline:**
+    * **Mime Extractor:** Parses raw email headers and body.
+    * **PHI Scrubber:** Uses **Amazon Comprehend Medical** to detect and redact sensitive patient data.
+    * **Decision Agent:** Uses **Amazon Bedrock (Nova Pro)** to reason about the email's intent and risk level.
+* **Storage:** Decision logs and raw email artifacts are stored in **S3**. Sender reputation and the Human-in-the-loop (HITL) queue are managed in **DynamoDB**.
 
-1. Open **CloudShell**.
-2. Run:
-   ```bash
-   cd mailshield-backend
-   chmod +x cloudshell_destroy.sh
-   ./cloudshell_destroy.sh
+---
+
+## 🗑️ Cleanup / Uninstalling
+
+To completely remove the system, tear down all deployed resources, and stop any associated costs in your AWS account:
+
+1.  Open **CloudShell** in your AWS Console.
+2.  Run the following commands:
+    ```bash
+    cd mailshield-backend
+    chmod +x cloudshell_destroy.sh
+    ./cloudshell_destroy.sh
+    ```

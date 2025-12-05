@@ -3,54 +3,64 @@ set -e
 
 echo "🛡️  Starting MailShield Backend Deployment..."
 
-# 1. Prepare Build Area
+# --- 1. Prepare Build Area ---
 echo "📦 Preparing build directory..."
 rm -rf dist
 mkdir -p dist/lambdas
 mkdir -p dist/config_defaults
 
-# 2. Bundle Configs
+# --- 2. Bundle Configs ---
 echo "📂 Bundling default configurations..."
 cp -r config_defaults/* dist/config_defaults/
 
-# 3. Bundle Code
+# --- 3. Bundle Code ---
 echo "🐍 Bundling Python Logic..."
 cp -r lambdas/* dist/lambdas/
 echo "📚 Installing dependencies..."
 pip install -r lambdas/requirements.txt -t dist/lambdas/ --quiet
 
-# 4. Install CDK
+# --- 4. Install CDK ---
 echo "🛠️  Installing AWS CDK..."
 cd infra
 npm install --quiet
 
-# 5. Deploy
+# --- 5. Deploy ---
 echo "🚀 Deploying to AWS..."
 npx cdk bootstrap
 npx cdk deploy --require-approval never
 
-# 6. Generate .env Output
+# --- 6. Fetch CloudFormation Outputs Dynamically ---
 echo ""
 echo "✅ DEPLOYMENT COMPLETE!"
 echo "---------------------------------------------------"
 echo "👇 COPY THIS INTO YOUR FRONTEND .env FILE 👇"
 echo "---------------------------------------------------"
 
-# Fetch outputs using AWS CLI
 STACK_NAME="MailShieldStack"
-REGION=$(aws configure get region)
-DECISIONS_BUCKET=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='DecisionsBucket'].OutputValue" --output text)
-HITL_TABLE=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='HitlTable'].OutputValue" --output text)
-FEEDBACK_TABLE=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='FeedbackTable'].OutputValue" --output text)
-CONTROLLER_FN=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='ControllerName'].OutputValue" --output text)
-FEEDBACK_AGENT_FN=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='FeedbackAgentName'].OutputValue" --output text)
-API_BASE_URL=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='ApiUrl'].OutputValue" --output text)
+REGION="${AWS_REGION:-${AWS_DEFAULT_REGION:-us-east-2}}"
 
-# Construct the full endpoint URL for the simple analyzer
-# Note: CDK output usually includes the trailing slash, e.g., ".../prod/"
+# Helper function to fetch a specific output key
+get_cfn_output() {
+    aws cloudformation describe-stacks \
+        --stack-name "$STACK_NAME" \
+        --region "$REGION" \
+        --query "Stacks[0].Outputs[?OutputKey=='$1'].OutputValue" \
+        --output text
+}
+
+# Fetch Outputs
+DECISIONS_BUCKET=$(get_cfn_output "DecisionsBucketName")
+HITL_TABLE=$(get_cfn_output "HitlTableName")
+FEEDBACK_TABLE=$(get_cfn_output "FeedbackTableName")
+CONTROLLER_FN=$(get_cfn_output "ControllerName")
+FEEDBACK_AGENT_FN=$(get_cfn_output "FeedbackAgentName")
+API_BASE_URL=$(get_cfn_output "ApiUrl")
+
+# Build the endpoint URL
 LAMBDA_ENDPOINT="${API_BASE_URL}analyze"
 
 echo "# AWS Credentials"
+echo "# You must replace these two lines with the keys created in the AWS Console"
 echo "AWS_REGION=$REGION"
 echo "AWS_ACCESS_KEY_ID=YOUR_ACCESS_KEY_HERE"
 echo "AWS_SECRET_ACCESS_KEY=YOUR_SECRET_ACCESS_KEY_HERE"
@@ -66,5 +76,7 @@ echo ""
 echo "# Lambda Functions"
 echo "SENDER_INTEL_CONTROLLER_FUNCTION=$CONTROLLER_FN"
 echo "FEEDBACK_AGENT_FN=$FEEDBACK_AGENT_FN"
+echo ""
+echo "# API Gateway Endpoint"
 echo "AWS_LAMBDA_ENDPOINT=$LAMBDA_ENDPOINT"
 echo "---------------------------------------------------"

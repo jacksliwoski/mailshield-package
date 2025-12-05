@@ -21,14 +21,12 @@ const PORT = process.env.PORT || 3000;
 // AWS SDK CONFIGURATION
 // ----------------------
 
-// ✅ Corrected: Includes sessionToken
 if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
   console.log("🔑 Using AWS credentials from environment variables");
   AWS.config.update({
     region: process.env.AWS_REGION || "us-east-2",
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    sessionToken: process.env.AWS_SESSION_TOKEN, // <--- ADD THIS LINE
   });
 } else {
   console.log(

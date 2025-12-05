@@ -205,12 +205,13 @@ export class MailShieldStack extends Stack {
     const analyzeIntegration = new apigw.LambdaIntegration(controllerFn);
     api.root.addResource('analyze').addMethod('POST', analyzeIntegration);
 
-    // --- 5. OUTPUTS (Crucial for the Script) ---
+    // --- 5. OUTPUTS (Corrected to avoid conflicts) ---
     new CfnOutput(this, 'ApiUrl', { value: api.url });
     new CfnOutput(this, 'ControllerName', { value: controllerFn.functionName });
-    new CfnOutput(this, 'DecisionsBucket', { value: decisionsBucket.bucketName });
-    new CfnOutput(this, 'HitlTable', { value: hitlQueueTable.tableName });
-    new CfnOutput(this, 'FeedbackTable', { value: feedbackTable.tableName });
+    // Renamed these to avoid collision with Resource Names
+    new CfnOutput(this, 'DecisionsBucketName', { value: decisionsBucket.bucketName });
+    new CfnOutput(this, 'HitlTableName', { value: hitlQueueTable.tableName });
+    new CfnOutput(this, 'FeedbackTableName', { value: feedbackTable.tableName });
     new CfnOutput(this, 'FeedbackAgentName', { value: feedbackAgentFn.functionName });
   }
 }
